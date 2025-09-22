@@ -1,14 +1,18 @@
+process.loadEnvFile();
 import express from 'express';
+import notificacionRoutes from './routes/notificacionRoutes.js';
+
 
 const app = express();
 app.use(express.json());
 
-process.loadEnvFile();
-
 app.get('/estado', (req, res) => {
-  res.json({ estado: 'todo bien perro' });
+    res.json({ estado: 'todo bien perro' });
 });
 
-app.listen(process.env.PUERTO, () => {
-  console.log(`Server arriba en http://localhost:${process.env.PUERTO}`);
+// Usar las rutas
+app.use('/api', notificacionRoutes);
+
+app.listen(process.env.NODE_PORT, () => {
+    console.log(`Servidor escuchando en http://localhost:${process.env.NODE_PORT}`);
 });

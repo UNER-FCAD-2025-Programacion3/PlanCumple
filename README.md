@@ -1,17 +1,17 @@
 # 🎉 PlanCumple
 
-**PlanCumple** es un sistema desarrollado como parte de la unidad de negocios **PROGIII**, orientado a la **gestión de reservas de salones de cumpleaños**.  
+**PlanCumple** es un sistema desarrollado como parte de la unidad de negocios **PROGIII**, enfocado en la **gestión de reservas de salones de cumpleaños**.  
 
-La API REST permite:  
+La API REST ofrece las siguientes funcionalidades:  
 - Autenticación y autorización de usuarios.  
 - Validación de datos.  
-- Gestión completa de reservas de salones de cumpleaños.  
+- Gestión integral de reservas de salones de cumpleaños.  
 
-Esta API está pensada para integrarse con un cliente web previamente desarrollado, ofreciendo un backend seguro, escalable y fácil de usar.  
+Esta API está diseñada para integrarse con un cliente web previamente desarrollado, proporcionando un backend seguro, escalable y fácil de usar.  
 
 ---
 
-## 👥 Integrantes del equipo (Grupo BA)
+## 👥 Equipo de desarrollo (Grupo BA)
 
 - **Kevin Kling**
 - **Rodrigo Cerros Masetto**
@@ -20,9 +20,9 @@ Esta API está pensada para integrarse con un cliente web previamente desarrolla
 
 ---
 
-## 🚀 Instrucciones para el equipo
+## 🚀 Guía para el equipo
 
-### Primera vez (clonar proyecto):
+### Configuración inicial (clonar el proyecto):
 ```bash
 git clone [URL_DEL_REPOSITORIO]
 cd PlanCumple
@@ -30,12 +30,12 @@ npm ci
 npm run dev
 ```
 
-### Día a día de desarrollo:
+### Flujo de trabajo diario:
 
-**Cuando haces pull de cambios:**
+**Al realizar un pull de cambios:**
 ```bash
 git pull
-npm ci  # Reinstala por si hay cambios en dependencias
+npm ci  # Reinstala dependencias si hubo cambios
 ```
 
 **Para agregar una nueva dependencia:**
@@ -51,11 +51,16 @@ npm run dev  # Modo desarrollo
 npm start    # Modo producción
 ```
 
-### ⚠️ Importante:
-- Usar **`npm ci`** en lugar de `npm install` (garantiza versiones exactas)
-- Nunca subir `node_modules/` al repo
-- Nunca subir archivo `.env` al repo
+### ⚠️ Recomendaciones importantes:
+- Utilizar **`npm ci`** en lugar de `npm install`.
+- Nunca subir la carpeta `node_modules/` al repositorio.
+- Nunca subir el archivo `.env` al repositorio.
 
 ---
 
 **Estándar JSON**: https://jsonapi.org/
+
+En este proyecto, seguimos los siguientes patrones:  
+- Patron MVC
+- **Singleton**: Garantiza una única instancia.  
+- **Lazy Loading**: Carga dinámica, creando o cargando recursos solo cuando son necesarios.

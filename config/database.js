@@ -1,8 +1,8 @@
 import mysql from 'mysql2/promise';
-
+process.loadEnvFile();
 export const conexion = await mysql.createConnection({
-  host: 'localhost',
-  user: 'reservas',
+  host: process.env.SQL_HOST,
   database: 'reservas',
-  password: '*reservas.25*'  
+  user: process.env.SQL_USER_ADMIN,
+  password: process.env.SQL_PASSWORD_ADMIN,
 });

@@ -2,8 +2,8 @@
 process.loadEnvFile();
 
 import express from 'express';
-import notificacionRoutes from './routes/notificacionRoutes.js';
-import salonRoutes from './routes/salonRoutes.js';
+import notificacionRoutes from './v1/routes/notificacionRoutes.js';
+import salonRoutes from './v1/routes/salonRoutes.js';
 
 
 const app = express();
@@ -13,9 +13,8 @@ app.get('/estado', (req, res) => {
     res.json({ estado: 'todo bien!' });
 });
 
-// Usar las rutas
-app.use('/api', notificacionRoutes);
-app.use('/api', salonRoutes);
+app.use('/api/v1', notificacionRoutes);
+app.use('/api/v1', salonRoutes);
 
 app.listen(process.env.NODE_PORT, () => {
     console.log(`Servidor escuchando en http://localhost:${process.env.NODE_PORT}`);

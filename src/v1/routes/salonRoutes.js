@@ -4,25 +4,19 @@ import {
     obtenerSalonPorId,
     crearSalon,
     actualizarSalon,
-    eliminarSalon
-} from '../controllers/salonController.js';
-import { validarSalon } from '../middleware/salonValidation.js';
+    eliminarSalon,
+    obtenerEstadisticas
+} from '../../controllers/salonController.js';
+import { validarSalon } from '../../middleware/salonValidation.js';
 
 const router = express.Router();
 
-// GET /api/salones - Obtener todos los salones
 router.get('/salones', obtenerSalones);
-
-// GET /api/salones/:id - Obtener un salón por ID
 router.get('/salones/:id', obtenerSalonPorId);
-
-// POST /api/salones - Crear un nuevo salón
+router.get('/salones/estadisticas', obtenerEstadisticas);
 router.post('/salones', validarSalon, crearSalon);
-
-// PUT /api/salones/:id - Actualizar un salón
 router.put('/salones/:id', validarSalon, actualizarSalon);
-
-// DELETE /api/salones/:id - Eliminar un salón
 router.delete('/salones/:id', eliminarSalon);
+// TODO: Ver si se puede hacer un PATCH 
 
 export default router;

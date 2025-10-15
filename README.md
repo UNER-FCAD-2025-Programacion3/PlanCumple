@@ -11,6 +11,45 @@ Esta API está diseñada para integrarse con un cliente web previamente desarrol
 
 ---
 
+## 🔗 Versionado de API
+
+La API utiliza **versionado por URL** para mantener compatibilidad y permitir evolución controlada:
+
+### Versión actual: **v1**
+- **Base URL**: `http://localhost:3000/api/v1`
+- **Formato de respuesta**: [JSON:API](https://jsonapi.org/)
+
+### Endpoints disponibles:
+
+#### 🏠 Salones
+- `GET /api/v1/salones` - Obtener todos los salones
+- `GET /api/v1/salones/:id` - Obtener un salón específico
+- `POST /api/v1/salones` - Crear un nuevo salón
+- `PUT /api/v1/salones/:id` - Actualizar un salón
+- `DELETE /api/v1/salones/:id` - Eliminar un salón (lógico)
+
+#### 📧 Notificaciones
+- `POST /api/v1/notificacion` - Enviar notificación
+
+### Ejemplo de uso:
+```bash
+# Obtener todos los salones
+curl -X GET http://localhost:3000/api/v1/salones
+
+# Crear un nuevo salón
+curl -X POST http://localhost:3000/api/v1/salones \
+  -H "Content-Type: application/json" \
+  -d '{"titulo":"Salon Cumpleaños","direccion":"Calle 123","capacidad":50,"importe":15000}'
+```
+
+### Beneficios del versionado:
+- ✅ **Compatibilidad hacia atrás**: Las versiones anteriores siguen funcionando
+- ✅ **Evolución controlada**: Nuevas funcionalidades sin romper integraciones existentes
+- ✅ **Migración gradual**: Los clientes pueden actualizar a su ritmo
+- ✅ **Mantenimiento**: Facilita el soporte de múltiples versiones
+
+---
+
 ## 👥 Equipo de desarrollo (Grupo BA)
 
 - **Kevin Kling**
@@ -55,10 +94,6 @@ npm start    # Modo producción
 - Utilizar **`npm ci`** en lugar de `npm install`.
 - Nunca subir la carpeta `node_modules/` al repositorio.
 - Nunca subir el archivo `.env` al repositorio.
-
----
-
-**Estándar JSON**: https://jsonapi.org/
 
 ---
 

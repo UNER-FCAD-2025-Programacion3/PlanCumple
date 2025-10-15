@@ -12,7 +12,7 @@ export class SalonModel {
 
     static async obtenerPorId(id) {
         try {
-            const [rows] = await conexion.execute('SELECT * FROM salones WHERE id = ? and activo = 1', [id]);
+            const [rows] = await conexion.execute('SELECT * FROM salones WHERE salon_id = ? and activo = 1', [id]);
             return rows[0] || null;
         } catch (error) {
             throw new Error(`Error al obtener salón por ID: ${error.message}`);
@@ -21,17 +21,19 @@ export class SalonModel {
 
     static async crear(salonData) {
         try {
-            const { nombre, capacidad, precio, descripcion } = salonData;
+            const { titulo, direccion, latitud, longitud, capacidad, importe } = salonData;
             const [result] = await conexion.execute(
-                'INSERT INTO salones (nombre, capacidad, precio, descripcion) VALUES (?, ?, ?, ?)',
-                [nombre, capacidad, precio, descripcion || null]
+                'INSERT INTO salones (titulo, direccion, latitud, longitud, capacidad, importe) VALUES (?, ?, ?, ?, ?, ?)',
+                [titulo, direccion, latitud || null, longitud || null, capacidad, importe]
             );
             return {
                 id: result.insertId,
-                nombre,
+                titulo,
+                direccion,
+                latitud,
+                longitud,
                 capacidad,
-                precio,
-                descripcion
+                importe
             };
         } catch (error) {
             throw new Error(`Error al crear salón: ${error.message}`);
@@ -40,10 +42,10 @@ export class SalonModel {
 
     static async actualizar(id, salonData) {
         try {
-            const { nombre, capacidad, precio, descripcion } = salonData;
+            const { titulo, direccion, latitud, longitud, capacidad, importe } = salonData;
             const [result] = await conexion.execute(
-                'UPDATE salones SET nombre = ?, capacidad = ?, precio = ?, descripcion = ? WHERE id = ?',
-                [nombre, capacidad, precio, descripcion || null, id]
+                'UPDATE salones SET titulo = ?, direccion = ?, latitud = ?, longitud = ?, capacidad = ?, importe = ? WHERE salon_id = ?',
+                [titulo, direccion, latitud || null, longitud || null, capacidad, importe, id]
             );
             
             if (result.affectedRows === 0) {
@@ -52,19 +54,30 @@ export class SalonModel {
             
             return {
                 id: parseInt(id),
-                nombre,
+                titulo,
+                direccion,
+                latitud,
+                longitud,
                 capacidad,
-                precio,
-                descripcion
+                importe
             };
         } catch (error) {
             throw new Error(`Error al actualizar salón: ${error.message}`);
         }
     }
 
-    static async eliminar(id) {
+    /* static async eliminar(id) {
         try {
-            const [result] = await conexion.execute('DELETE FROM salones WHERE id = ?', [id]);
+            const [result] = await conexion.execute('DELETE FROM salones WHERE salon_id = ?', [id]);
+            return result.affectedRows > 0;
+        } catch (error) {
+            throw new Error(`Error al eliminar salón: ${error.message}`);
+        }
+    } */
+
+    static async eliminarLogico(id) {
+        try {
+            const [result] = await conexion.execute('UPDATE salones SET activo = 0 WHERE salon_id = ?', [id]);
             return result.affectedRows > 0;
         } catch (error) {
             throw new Error(`Error al eliminar salón: ${error.message}`);
@@ -73,7 +86,7 @@ export class SalonModel {
 
     static async existe(id) {
         try {
-            const [rows] = await conexion.execute('SELECT 1 FROM salones WHERE id = ?', [id]);
+            const [rows] = await conexion.execute('SELECT 1 FROM salones WHERE salon_id = ?', [id]);
             return rows.length > 0;
         } catch (error) {
             throw new Error(`Error al verificar existencia del salón: ${error.message}`);

@@ -3,17 +3,19 @@ import { SalonModel } from '../models/salonModel.js';
 // Funciones auxiliares para JSON:API
 const formatResource = (salon, type = 'salones') => ({
     type,
-    salon_id: salon.salon_id.toString(),
+    id: salon.salon_id.toString(),
     attributes: {
-        titulo: salon.titulo
-      /*   capacidad: salon.capacidad,
-        precio: salon.precio,
-        descripcion: salon.descripcion,
-        created_at: salon.created_at,
-        updated_at: salon.updated_at */
+        salon_id: salon.salon_id,
+        titulo: salon.titulo,
+        direccion: salon.direccion,
+        latitud: salon.latitud,
+        longitud: salon.longitud,
+        capacidad: salon.capacidad,
+        importe: salon.importe
     }
 });
 
+// TODO: Buscar una mejor forma de manejar esto. Esto es para responder con el formato https://jsonapi.org/
 const formatJsonApiResponse = (data, meta = {}, links = {}) => {
     const response = { data };
     if (Object.keys(meta).length > 0) response.meta = meta;
@@ -64,17 +66,12 @@ export const obtenerSalonPorId = async (req, res) => {
 
 export const crearSalon = async (req, res) => {
     try {
-        const { nombre, capacidad, precio, descripcion } = req.body;
+        const { titulo, direccion, latitud, longitud, capacidad, importe } = req.body;
         
-        // Validación básica
-        if (!nombre || !capacidad || !precio) {
-            return res.status(400).json(formatJsonApiError(400, 'Solicitud incorrecta', 'Los campos nombre, capacidad y precio son obligatorios'));
-        }
-
-        const nuevoSalon = await SalonModel.crear({ nombre, capacidad, precio, descripcion });
+        const nuevoSalon = await SalonModel.crear({ titulo, direccion, latitud, longitud, capacidad, importe });
 
         const links = {
-            self: `/api/salones/${nuevoSalon.id}`
+            self: `/api/salones/${nuevoSalon.salon_id}`
         };
 
         res.status(201).json(formatJsonApiResponse(formatResource(nuevoSalon), {}, links));
@@ -87,7 +84,7 @@ export const crearSalon = async (req, res) => {
 export const actualizarSalon = async (req, res) => {
     try {
         const { id } = req.params;
-        const { nombre, capacidad, precio, descripcion } = req.body;
+        const { titulo, direccion, latitud, longitud, capacidad, importe } = req.body;
 
         // Verificar si el salón existe
         const existe = await SalonModel.existe(id);
@@ -95,7 +92,7 @@ export const actualizarSalon = async (req, res) => {
             return res.status(404).json(formatJsonApiError(404, 'Salón no encontrado', `No se encontró ningún salón con el ID: ${id}`));
         }
 
-        const salonActualizado = await SalonModel.actualizar(id, { nombre, capacidad, precio, descripcion });
+        const salonActualizado = await SalonModel.actualizar(id, { titulo, direccion, latitud, longitud, capacidad, importe });
 
         const links = {
             self: `/api/salones/${id}`
@@ -118,7 +115,7 @@ export const eliminarSalon = async (req, res) => {
             return res.status(404).json(formatJsonApiError(404, 'Salón no encontrado', `No se encontró ningún salón con el ID: ${id}`));
         }
 
-        const eliminado = await SalonModel.eliminar(id);
+        const eliminado = await SalonModel.eliminarLogico(id);
 
         if (eliminado) {
             res.status(204).json(); // JSON:API usa 204 No Content para eliminaciones exitosas

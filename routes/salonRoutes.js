@@ -6,6 +6,7 @@ import {
     actualizarSalon,
     eliminarSalon
 } from '../controllers/salonController.js';
+import { validarSalon } from '../middleware/salonValidation.js';
 
 const router = express.Router();
 
@@ -16,10 +17,10 @@ router.get('/salones', obtenerSalones);
 router.get('/salones/:id', obtenerSalonPorId);
 
 // POST /api/salones - Crear un nuevo salón
-router.post('/salones', crearSalon);
+router.post('/salones', validarSalon, crearSalon);
 
 // PUT /api/salones/:id - Actualizar un salón
-router.put('/salones/:id', actualizarSalon);
+router.put('/salones/:id', validarSalon, actualizarSalon);
 
 // DELETE /api/salones/:id - Eliminar un salón
 router.delete('/salones/:id', eliminarSalon);

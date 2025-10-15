@@ -60,7 +60,31 @@ npm start    # Modo producción
 
 **Estándar JSON**: https://jsonapi.org/
 
-En este proyecto, seguimos los siguientes patrones:  
-- Patron MVC
-- **Singleton**: Garantiza una única instancia.  
-- **Lazy Loading**: Carga dinámica, creando o cargando recursos solo cuando son necesarios.
+---
+
+## 🛠️ Tecnologías y dependencias
+
+### Principales dependencias:
+- **Express.js**: Framework web para Node.js
+- **MySQL2**: Cliente MySQL para Node.js con soporte para promesas
+- **Express Validator**: Middleware de validación para Express.js
+- **Handlebars**: Motor de plantillas para vistas
+
+### Validaciones:
+Este proyecto utiliza **Express Validator** para validaciones robustas:
+
+#### Validaciones de salones:
+- **titulo**: Obligatorio, sin espacios
+- **capacidad**: Número mayor a 0  
+- **importe**: Número mayor a 0
+- **direccion**: Texto obligatorio, no vacío
+- **latitud**: Opcional, entre -90 y 90 (si se proporciona)
+- **longitud**: Opcional, entre -180 y 180 (si se proporciona)
+
+### Patrones de diseño implementados:
+- **Patrón MVC**: Separación clara entre Modelo, Vista y Controlador
+- **Singleton**: Garantiza una única instancia de conexión a BD
+- **Lazy Loading**: Carga dinámica, creando recursos solo cuando son necesarios
+- **Middleware Pattern**: Validaciones centralizadas y reutilizables
+
+---

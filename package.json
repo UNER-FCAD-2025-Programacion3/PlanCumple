@@ -2,16 +2,17 @@
   "name": "plancumple",
   "version": "1.0.0",
   "description": "**PlanCumple** es un sistema desarrollado como parte de la unidad de negocios **PROGIII**, orientado a la **gestión de reservas de salones de cumpleaños**.",
-  "main": "src/reservas.js",
+  "main": "src/servidor.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --watch src/reservas.js"
+    "dev": "node --watch src/servidor.js"
   },
   "keywords": [],
   "author": "Kevin, Rodrigo, Luz, Francisco",
   "license": "ISC",
   "dependencies": {
+    "apicache": "1.6.3",
     "express": "5.1.0",
     "express-validator": "7.2.1",
     "handlebars": "4.7.8",

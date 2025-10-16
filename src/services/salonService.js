@@ -59,12 +59,6 @@ class SalonService {
                 throw new Error('La capacidad y el importe deben ser mayores a 0');
             }
 
-            // Verificar si ya existe un salón con el mismo título
-            const salonExistente = await this.buscarPorTitulo(titulo);
-            if (salonExistente) {
-                throw new Error(`Ya existe un salón con el título: ${titulo}`);
-            }
-
             return SalonModel.crear(datosSalon);
         } catch (error) {
             console.error('Error en SalonService al crear salón:', error);
@@ -95,13 +89,6 @@ class SalonService {
                 throw new Error('El importe debe ser mayor a 0');
             }
 
-            // Si se está actualizando el título, verificar que no exista otro salón con ese título
-            if (titulo) {
-                const salonExistente = await this.buscarPorTitulo(titulo);
-                if (salonExistente && salonExistente.salon_id !== parseInt(id)) {
-                    throw new Error(`Ya existe otro salón con el título: ${titulo}`);
-                }
-            }
 
             return SalonModel.actualizar(id, datosSalon);
         } catch (error) {

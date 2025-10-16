@@ -24,6 +24,7 @@ La API utiliza **versionado por URL** para mantener compatibilidad y permitir ev
 #### 🏠 Salones
 - `GET /api/v1/salones` - Obtener todos los salones
 - `GET /api/v1/salones/:id` - Obtener un salón específico
+- `GET /api/v1/salones/estadisticas` - Obtener estadísticas de salones
 - `POST /api/v1/salones` - Crear un nuevo salón
 - `PUT /api/v1/salones/:id` - Actualizar un salón
 - `DELETE /api/v1/salones/:id` - Eliminar un salón (lógico)
@@ -104,6 +105,8 @@ npm start    # Modo producción
 - **MySQL2**: Cliente MySQL para Node.js con soporte para promesas
 - **Express Validator**: Middleware de validación para Express.js
 - **Handlebars**: Motor de plantillas para vistas
+- **Nodemailer**: Biblioteca para envío de correos electrónicos
+- **Apicache**: Middleware de caché para mejorar rendimiento
 
 ### Validaciones:
 Este proyecto utiliza **Express Validator** para validaciones robustas:
@@ -121,5 +124,48 @@ Este proyecto utiliza **Express Validator** para validaciones robustas:
 - **Singleton**: Garantiza una única instancia de conexión a BD
 - **Lazy Loading**: Carga dinámica, creando recursos solo cuando son necesarios
 - **Middleware Pattern**: Validaciones centralizadas y reutilizables
+- **Caching Pattern**: Implementación de caché para optimizar rendimiento de consultas
+
+### Características técnicas:
+- **ES Modules**: Utiliza `type: "module"` para soporte nativo de módulos ES6
+- **Caché inteligente**: Sistema de caché diferenciado por endpoint (3-10 minutos)
+- **Validaciones robustas**: Middleware centralizado para validación de datos
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+PlanCumple/
+├─ .env
+├─ .env.example
+├─ .gitignore
+├─ NOTES.md
+├─ package.json
+├─ package-lock.json
+├─ README.md
+└─ src/
+   ├─ config/
+   │  └─ database.js
+   ├─ controllers/
+   │  ├─ notificacionController.js
+   │  └─ salonController.js
+   ├─ middleware/
+   │  └─ salonValidation.js
+   ├─ models/
+   │  └─ salonModel.js
+   ├─ reservas.js
+   ├─ services/
+   │  ├─ emailService.js
+   │  └─ salonService.js
+   ├─ servidor.js
+   ├─ utils/
+   │  └─ handlebars/
+   │     └─ plantilla.hbs
+   └─ v1/
+      └─ routes/
+         ├─ notificacionRoutes.js
+         └─ salonRoutes.js
+```
 
 ---

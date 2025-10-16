@@ -1,4 +1,5 @@
 import express from 'express';
+import apicache from 'apicache';
 import {
     obtenerSalones,
     obtenerSalonPorId,
@@ -10,13 +11,19 @@ import {
 import { validarSalon } from '../../middleware/salonValidation.js';
 
 const router = express.Router();
+let cache = apicache.middleware;
 
-router.get('/salones', obtenerSalones);
-router.get('/salones/:id', obtenerSalonPorId);
-router.get('/salones/estadisticas', obtenerEstadisticas);
-router.post('/salones', validarSalon, crearSalon);
-router.put('/salones/:id', validarSalon, actualizarSalon);
-router.delete('/salones/:id', eliminarSalon);
-// TODO: Ver si se puede hacer un PATCH 
+const clearCache = (req, res, next) => {
+    apicache.clear();
+    next();
+};
+
+router.get('/salones', cache('5 minutes'), obtenerSalones);
+router.get('/salones/:id', cache('3 minutes'), obtenerSalonPorId);
+router.get('/salones/estadisticas', cache('10 minutes'), obtenerEstadisticas);
+router.post('/salones', validarSalon, clearCache, crearSalon);
+router.put('/salones/:id', validarSalon, clearCache, actualizarSalon);
+router.delete('/salones/:id', clearCache, eliminarSalon);
+// TODO: PATCH 
 
 export default router;

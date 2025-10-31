@@ -1,4 +1,4 @@
-import { conexion } from '../config/database.js';
+import conexion from '../config/database.js'; 
 
 export class SalonModel {
     static async obtenerTodos() {

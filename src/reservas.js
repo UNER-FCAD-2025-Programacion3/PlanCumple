@@ -1,6 +1,7 @@
 import express from 'express';
 import notificacionRoutes from './v1/routes/notificacionRoutes.js';
 import salonRoutes from './v1/routes/salonRoutes.js';
+import turnoRoutes from './v1/routes/turnoRoutes.js';
 
 
 const app = express();
@@ -12,5 +13,6 @@ app.get('/estado', (req, res) => {
 
 app.use('/api/v1', notificacionRoutes);
 app.use('/api/v1', salonRoutes);
+app.use('/api/v1', turnoRoutes);
 
 export default app;

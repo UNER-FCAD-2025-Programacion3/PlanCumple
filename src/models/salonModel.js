@@ -3,7 +3,9 @@ import conexion from '../config/database.js';
 export class SalonModel {
     static async obtenerTodos() {
         try {
-            const [rows] = await conexion.execute('SELECT * FROM salones WHERE activo = 1');
+            const [rows] = await conexion.execute(
+                'SELECT salon_id, titulo, direccion, latitud, longitud, capacidad, importe FROM salones WHERE activo = 1'
+            );
             return rows;
         } catch (error) {
             throw new Error(`Error al obtener salones: ${error.message}`);
@@ -12,7 +14,10 @@ export class SalonModel {
 
     static async obtenerPorId(id) {
         try {
-            const [rows] = await conexion.execute('SELECT * FROM salones WHERE salon_id = ? and activo = 1', [id]);
+            const [rows] = await conexion.execute(
+                'SELECT salon_id, titulo, direccion, latitud, longitud, capacidad, importe FROM salones WHERE salon_id = ? and activo = 1', 
+                [id]
+            );
             return rows[0] || null;
         } catch (error) {
             throw new Error(`Error al obtener salón por ID: ${error.message}`);

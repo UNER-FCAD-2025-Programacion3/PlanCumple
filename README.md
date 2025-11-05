@@ -17,7 +17,7 @@ La API utiliza **versionado por URL** para mantener compatibilidad y permitir ev
 
 ### Versión actual: **v1**
 - **Base URL**: `http://localhost:3000/api/v1`
-- **Formato de respuesta**: [JSON:API](https://jsonapi.org/)
+- **Formato de respuesta**: [JSend](https://github.com/omniti-labs/jsend)
 
 ### Endpoints disponibles:
 
@@ -29,19 +29,45 @@ La API utiliza **versionado por URL** para mantener compatibilidad y permitir ev
 - `PUT /api/v1/salones/:id` - Actualizar un salón
 - `DELETE /api/v1/salones/:id` - Eliminar un salón (lógico)
 
+#### ⏰ Turnos
+- `GET /api/v1/turnos` - Obtener todos los turnos
+- `GET /api/v1/turnos/:id` - Obtener un turno específico
+- `POST /api/v1/turnos` - Crear un nuevo turno
+- `PUT /api/v1/turnos/:id` - Actualizar un turno
+- `DELETE /api/v1/turnos/:id` - Eliminar un turno (lógico)
+
 #### 📧 Notificaciones
 - `POST /api/v1/notificacion` - Enviar notificación
 
-### Ejemplo de uso:
+### Ejemplos de uso:
 ```bash
 # Obtener todos los salones
 curl -X GET http://localhost:3000/api/v1/salones
+# Respuesta: {"status":"success","data":[...]}
 
 # Crear un nuevo salón
 curl -X POST http://localhost:3000/api/v1/salones \
   -H "Content-Type: application/json" \
   -d '{"titulo":"Salon Cumpleaños","direccion":"Calle 123","capacidad":50,"importe":15000}'
+# Respuesta: {"status":"success","data":{"salon_id":1,...}}
+
+# Error de validación
+curl -X POST http://localhost:3000/api/v1/salones \
+  -H "Content-Type: application/json" \
+  -d '{"titulo":"","direccion":"Calle 123"}'
+# Respuesta: {"status":"fail","data":{"validation":"El título es requerido"}}
+
+# Recurso no encontrado
+curl -X GET http://localhost:3000/api/v1/salones/999
+# Respuesta: {"status":"fail","data":{"salon_id":"No se encontró ningún salón con el ID: 999"}}
 ```
+
+### Códigos de estado HTTP:
+- **200**: Operación exitosa (GET, PUT, DELETE)
+- **201**: Creación exitosa (POST)
+- **400**: Error de validación o datos incorrectos
+- **404**: Recurso no encontrado
+- **500**: Error interno del servidor
 
 ### Beneficios del versionado:
 - ✅ **Compatibilidad hacia atrás**: Las versiones anteriores siguen funcionando
@@ -149,23 +175,42 @@ PlanCumple/
    │  └─ database.js
    ├─ controllers/
    │  ├─ notificacionController.js
-   │  └─ salonController.js
+   │  ├─ salonController.js
+   │  └─ turnoController.js
    ├─ middleware/
-   │  └─ salonValidation.js
+   │  ├─ salonValidation.js
+   │  └─ turnoValidation.js
    ├─ models/
-   │  └─ salonModel.js
+   │  ├─ salonModel.js
+   │  └─ turnoModel.js
    ├─ reservas.js
    ├─ services/
    │  ├─ emailService.js
-   │  └─ salonService.js
+   │  ├─ salonService.js
+   │  └─ turnoService.js
    ├─ servidor.js
    ├─ utils/
+   │  ├─ jsendResponse.js
    │  └─ handlebars/
    │     └─ plantilla.hbs
    └─ v1/
       └─ routes/
          ├─ notificacionRoutes.js
-         └─ salonRoutes.js
+         ├─ salonRoutes.js
+         └─ turnoRoutes.js
 ```
+
+### 🔧 Funcionalidades implementadas:
+
+#### Entidades:
+- **Salones**: Gestión completa de salones de fiestas
+- **Turnos**: Administración de horarios y turnos disponibles
+- **Notificaciones**: Sistema de envío de correos electrónicos
+
+#### Características técnicas:
+- **Formato JSend**: Respuestas consistentes y estandardizadas
+- **Validaciones robustas**: Middleware de validación en todas las entidades
+- **Eliminación lógica**: Soft delete para mantener integridad referencial
+- **Gestión de errores**: Manejo completo de errores con códigos HTTP apropiados
 
 ---

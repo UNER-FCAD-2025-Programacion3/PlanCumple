@@ -3,7 +3,9 @@ import conexion from '../config/database.js';
 export class TurnoModel {
     static async obtenerTodos() {
         try {
-            const [rows] = await conexion.execute('SELECT * FROM turnos WHERE activo = 1 ORDER BY orden ASC');
+            const [rows] = await conexion.execute(
+                'SELECT turno_id, orden, hora_desde, hora_hasta FROM turnos WHERE activo = 1 ORDER BY orden ASC'
+            );
             return rows;
         } catch (error) {
             throw new Error(`Error al obtener turnos: ${error.message}`);
@@ -12,7 +14,10 @@ export class TurnoModel {
 
     static async obtenerPorId(id) {
         try {
-            const [rows] = await conexion.execute('SELECT * FROM turnos WHERE turno_id = ? AND activo = 1', [id]);
+            const [rows] = await conexion.execute(
+                'SELECT turno_id, orden, hora_desde, hora_hasta FROM turnos WHERE turno_id = ? AND activo = 1', 
+                [id]
+            );
             return rows[0] || null;
         } catch (error) {
             throw new Error(`Error al obtener turno por ID: ${error.message}`);

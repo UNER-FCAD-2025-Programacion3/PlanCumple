@@ -2,6 +2,7 @@ import { ReservaModel } from '../models/reservaModel.js';
 import { UsuarioModel } from '../models/usuarioModel.js';
 import { SalonModel } from '../models/salonModel.js';
 import { TurnoModel } from '../models/turnoModel.js';
+import { ReservaServicioModel } from '../models/reservaServicioModel.js';
 
 class ReservaService {
     static instance = null;
@@ -128,9 +129,8 @@ class ReservaService {
                 usuario_id, 
                 turno_id, 
                 foto_cumpleaniero, 
-                tematica, 
-                importe_salon, 
-                importe_total 
+                tematica,
+                servicios = [] // Array de servicios opcionales
             } = datosReserva;
 
             // Validaciones básicas
@@ -159,9 +159,9 @@ class ReservaService {
                 throw new Error(`No se encontró ningún usuario con el ID: ${usuario_id}`);
             }
 
-            // Verificar que el salón existe
-            const salonExiste = await SalonModel.existe(salon_id);
-            if (!salonExiste) {
+            // Verificar que el salón existe y obtener su importe
+            const salon = await SalonModel.obtenerPorId(salon_id);
+            if (!salon) {
                 throw new Error(`No se encontró ningún salón con el ID: ${salon_id}`);
             }
 
@@ -177,19 +177,6 @@ class ReservaService {
                 throw new Error('El salón ya está reservado para esa fecha y turno');
             }
 
-            // Validar importes si se proporcionan
-            if (importe_salon !== undefined && importe_salon !== null) {
-                if (isNaN(parseFloat(importe_salon)) || parseFloat(importe_salon) < 0) {
-                    throw new Error('El importe del salón debe ser un número positivo');
-                }
-            }
-
-            if (importe_total !== undefined && importe_total !== null) {
-                if (isNaN(parseFloat(importe_total)) || parseFloat(importe_total) < 0) {
-                    throw new Error('El importe total debe ser un número positivo');
-                }
-            }
-
             // Validar longitud de campos de texto
             if (foto_cumpleaniero && foto_cumpleaniero.length > 255) {
                 throw new Error('La URL de la foto del cumpleañero debe tener máximo 255 caracteres');
@@ -199,6 +186,10 @@ class ReservaService {
                 throw new Error('La temática debe tener máximo 255 caracteres');
             }
 
+            // Calcular el importe total inicial (solo salón, los servicios se añadirán después si los hay)
+            const importeSalon = parseFloat(salon.importe);
+            const importeTotal = importeSalon; // Inicialmente solo el salón
+
             const datosParaCrear = {
                 fecha_reserva,
                 salon_id: parseInt(salon_id),
@@ -206,11 +197,41 @@ class ReservaService {
                 turno_id: parseInt(turno_id),
                 foto_cumpleaniero: foto_cumpleaniero && foto_cumpleaniero.trim() !== '' ? foto_cumpleaniero.trim() : null,
                 tematica: tematica && tematica.trim() !== '' ? tematica.trim() : null,
-                importe_salon: importe_salon !== undefined && importe_salon !== null ? parseFloat(importe_salon) : null,
-                importe_total: importe_total !== undefined && importe_total !== null ? parseFloat(importe_total) : null
+                importe_salon: importeSalon,
+                importe_total: importeTotal
             };
 
-            return await ReservaModel.crear(datosParaCrear);
+            // Crear la reserva
+            const reservaCreada = await ReservaModel.crear(datosParaCrear);
+
+            // Si se proporcionaron servicios, añadirlos y recalcular el total
+            if (servicios && servicios.length > 0) {
+                let totalServicios = 0;
+                
+                // Agregar cada servicio
+                for (const servicio of servicios) {
+                    if (!servicio.servicio_id || !servicio.importe) {
+                        throw new Error('Cada servicio debe tener servicio_id e importe');
+                    }
+                    
+                    await ReservaServicioModel.crear({
+                        reserva_id: reservaCreada.reserva_id,
+                        servicio_id: servicio.servicio_id,
+                        importe: parseFloat(servicio.importe)
+                    });
+                    
+                    totalServicios += parseFloat(servicio.importe);
+                }
+                
+                // Actualizar el importe total
+                const nuevoImporteTotal = importeSalon + totalServicios;
+                await ReservaModel.actualizarImporteTotal(reservaCreada.reserva_id, importeSalon, totalServicios);
+                
+                // Actualizar el objeto reserva con el nuevo total
+                reservaCreada.importe_total = nuevoImporteTotal;
+            }
+
+            return reservaCreada;
         } catch (error) {
             console.error('Error en ReservaService al crear reserva:', error);
             throw error;
@@ -239,6 +260,17 @@ class ReservaService {
                 importe_total 
             } = datosReserva;
 
+            let importeSalonFinal = importe_salon;
+
+            // Si se cambió el salón, obtener su nuevo importe
+            if (salon_id) {
+                const salon = await SalonModel.obtenerPorId(salon_id);
+                if (!salon) {
+                    throw new Error(`No se encontró ningún salón con el ID: ${salon_id}`);
+                }
+                importeSalonFinal = parseFloat(salon.importe);
+            }
+
             // Validaciones si se proporcionan los campos
             if (fecha_reserva) {
                 const fechaRegex = /^\d{4}-\d{2}-\d{2}$/;
@@ -263,13 +295,6 @@ class ReservaService {
                 }
             }
 
-            if (salon_id) {
-                const salonExiste = await SalonModel.existe(salon_id);
-                if (!salonExiste) {
-                    throw new Error(`No se encontró ningún salón con el ID: ${salon_id}`);
-                }
-            }
-
             if (turno_id) {
                 const turnoExiste = await TurnoModel.existe(turno_id);
                 if (!turnoExiste) {
@@ -290,11 +315,12 @@ class ReservaService {
                 }
             }
 
-            // Validar importes si se proporcionan
+            // Validar importes si se proporcionan manualmente
             if (importe_salon !== undefined && importe_salon !== null) {
                 if (isNaN(parseFloat(importe_salon)) || parseFloat(importe_salon) < 0) {
                     throw new Error('El importe del salón debe ser un número positivo');
                 }
+                importeSalonFinal = parseFloat(importe_salon);
             }
 
             if (importe_total !== undefined && importe_total !== null) {
@@ -321,8 +347,7 @@ class ReservaService {
                     (foto_cumpleaniero && foto_cumpleaniero.trim() !== '' ? foto_cumpleaniero.trim() : null) : undefined,
                 tematica: tematica !== undefined ? 
                     (tematica && tematica.trim() !== '' ? tematica.trim() : null) : undefined,
-                importe_salon: importe_salon !== undefined ? 
-                    (importe_salon !== null ? parseFloat(importe_salon) : null) : undefined,
+                importe_salon: importeSalonFinal !== undefined ? importeSalonFinal : undefined,
                 importe_total: importe_total !== undefined ? 
                     (importe_total !== null ? parseFloat(importe_total) : null) : undefined
             };
@@ -332,7 +357,16 @@ class ReservaService {
                 datosParaActualizar[key] === undefined && delete datosParaActualizar[key]
             );
 
-            return await ReservaModel.actualizar(id, datosParaActualizar);
+            const reservaActualizada = await ReservaModel.actualizar(id, datosParaActualizar);
+
+            // Si se cambió el salón o se quiere recalcular automáticamente, actualizar el importe total
+            if (salon_id && !importe_total) {
+                await this.recalcularImporteTotal(id);
+                // Obtener la reserva actualizada con el nuevo total
+                return await ReservaModel.obtenerPorId(id);
+            }
+
+            return reservaActualizada;
         } catch (error) {
             console.error('Error en ReservaService al actualizar reserva:', error);
             throw error;
@@ -403,6 +437,36 @@ class ReservaService {
             return await ReservaModel.obtenerReservasProximas(parseInt(diasAdelante));
         } catch (error) {
             console.error('Error en ReservaService al obtener reservas próximas:', error);
+            throw error;
+        }
+    }
+
+    async recalcularImporteTotal(reservaId) {
+        try {
+            // Obtener la reserva actual
+            const reserva = await ReservaModel.obtenerPorId(reservaId);
+            if (!reserva) {
+                throw new Error(`No se encontró ninguna reserva con el ID: ${reservaId}`);
+            }
+
+            // Calcular el total de servicios
+            const totalServicios = await ReservaModel.obtenerTotalServiciosPorReserva(reservaId);
+            
+            // Actualizar el importe total
+            const nuevoImporteTotal = await ReservaModel.actualizarImporteTotal(
+                reservaId, 
+                reserva.importe_salon, 
+                totalServicios
+            );
+
+            return {
+                reserva_id: reservaId,
+                importe_salon: parseFloat(reserva.importe_salon),
+                total_servicios: totalServicios,
+                importe_total: nuevoImporteTotal
+            };
+        } catch (error) {
+            console.error('Error en ReservaService al recalcular importe total:', error);
             throw error;
         }
     }

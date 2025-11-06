@@ -53,7 +53,7 @@ export class ServicioModel {
             const { descripcion, importe } = servicioData;
             const [result] = await conexion.execute(
                 'UPDATE servicios SET descripcion = ?, importe = ? WHERE servicio_id = ?',
-                [descripcion, importe, id]
+                [descripcion || null, importe || null, id]
             );
             
             return {

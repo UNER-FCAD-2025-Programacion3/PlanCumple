@@ -12,7 +12,8 @@ import {
     eliminarReserva,
     verificarDisponibilidad,
     obtenerEstadisticas,
-    obtenerReservasProximas
+    obtenerReservasProximas,
+    recalcularImporteTotal
 } from '../../controllers/reservaController.js';
 import { 
     validarReserva, 
@@ -44,6 +45,7 @@ router.get('/reservas/fecha/:fecha', cache('2 minutes'), obtenerReservasPorFecha
 // Rutas de modificación (limpian caché)
 router.post('/reservas', validarReserva, clearCache, crearReserva);
 router.put('/reservas/:id', validarActualizacionReserva, clearCache, actualizarReserva);
+router.patch('/reservas/:id/recalcular-total', clearCache, recalcularImporteTotal);
 router.delete('/reservas/:id', clearCache, eliminarReserva);
 
 export default router;

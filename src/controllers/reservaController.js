@@ -123,9 +123,8 @@ class ReservaController {
                 usuario_id, 
                 turno_id, 
                 foto_cumpleaniero, 
-                tematica, 
-                importe_salon, 
-                importe_total 
+                tematica,
+                servicios // Array opcional de servicios: [{ servicio_id, importe }]
             } = req.body;
 
             const nueva = await this.reservaService.crear({ 
@@ -134,9 +133,8 @@ class ReservaController {
                 usuario_id, 
                 turno_id, 
                 foto_cumpleaniero, 
-                tematica, 
-                importe_salon, 
-                importe_total 
+                tematica,
+                servicios
             });
 
             res.status(201).json(JSendResponse.success(nueva));
@@ -149,7 +147,9 @@ class ReservaController {
                 error.message.includes('ya está reservado') ||
                 error.message.includes('importe') ||
                 error.message.includes('máximo') ||
-                error.message.includes('positivo')) {
+                error.message.includes('positivo') ||
+                error.message.includes('servicio_id') ||
+                error.message.includes('Cada servicio')) {
                 return res.status(400).json(JSendResponse.fail({ 
                     validation: error.message 
                 }));
@@ -297,6 +297,28 @@ class ReservaController {
             res.status(500).json(JSendResponse.error('Error interno del servidor'));
         }
     }
+
+    async recalcularImporteTotal(req, res) {
+        try {
+            const { id } = req.params;
+            
+            const resultado = await this.reservaService.recalcularImporteTotal(id);
+            res.status(200).json(JSendResponse.success(resultado));
+        } catch (error) {
+            console.error('Error al recalcular importe total:', error);
+            if (error.message.includes('No se encontró')) {
+                return res.status(404).json(JSendResponse.fail({ 
+                    reserva_id: error.message 
+                }));
+            }
+            if (error.message.includes('ID inválido')) {
+                return res.status(400).json(JSendResponse.fail({ 
+                    validation: error.message 
+                }));
+            }
+            res.status(500).json(JSendResponse.error('Error interno del servidor'));
+        }
+    }
 }
 
 const reservaController = new ReservaController();
@@ -313,5 +335,6 @@ export const eliminarReserva = reservaController.eliminarReserva.bind(reservaCon
 export const verificarDisponibilidad = reservaController.verificarDisponibilidad.bind(reservaController);
 export const obtenerEstadisticas = reservaController.obtenerEstadisticas.bind(reservaController);
 export const obtenerReservasProximas = reservaController.obtenerReservasProximas.bind(reservaController);
+export const recalcularImporteTotal = reservaController.recalcularImporteTotal.bind(reservaController);
 
 export default ReservaController;

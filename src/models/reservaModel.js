@@ -15,24 +15,24 @@ export class ReservaModel {
                     r.creado,
                     r.modificado,
                     s.salon_id,
-                    s.nombre as salon_nombre,
+                    s.titulo as salon_nombre,
                     s.capacidad as salon_capacidad,
-                    s.precio_base as salon_precio_base,
+                    s.importe as salon_precio_base,
                     u.usuario_id,
                     u.nombre as usuario_nombre,
                     u.apellido as usuario_apellido,
                     u.nombre_usuario as usuario_email,
                     u.celular as usuario_celular,
                     t.turno_id,
-                    t.nombre as turno_nombre,
-                    t.hora_inicio,
-                    t.hora_fin
+                    t.orden as turno_orden,
+                    t.hora_desde,
+                    t.hora_hasta
                 FROM reservas r
                 INNER JOIN salones s ON r.salon_id = s.salon_id
                 INNER JOIN usuarios u ON r.usuario_id = u.usuario_id
                 INNER JOIN turnos t ON r.turno_id = t.turno_id
                 WHERE r.activo = 1
-                ORDER BY r.fecha_reserva DESC, t.hora_inicio ASC
+                ORDER BY r.fecha_reserva DESC, t.hora_desde ASC
             `);
             return rows;
         } catch (error) {
@@ -54,19 +54,19 @@ export class ReservaModel {
                     r.creado,
                     r.modificado,
                     s.salon_id,
-                    s.nombre as salon_nombre,
+                    s.titulo as salon_nombre,
                     s.capacidad as salon_capacidad,
-                    s.precio_base as salon_precio_base,
-                    s.descripcion as salon_descripcion,
+                    s.importe as salon_precio_base,
+                    s.direccion as salon_direccion,
                     u.usuario_id,
                     u.nombre as usuario_nombre,
                     u.apellido as usuario_apellido,
                     u.nombre_usuario as usuario_email,
                     u.celular as usuario_celular,
                     t.turno_id,
-                    t.nombre as turno_nombre,
-                    t.hora_inicio,
-                    t.hora_fin
+                    t.orden as turno_orden,
+                    t.hora_desde,
+                    t.hora_hasta
                 FROM reservas r
                 INNER JOIN salones s ON r.salon_id = s.salon_id
                 INNER JOIN usuarios u ON r.usuario_id = u.usuario_id
@@ -93,18 +93,18 @@ export class ReservaModel {
                     r.creado,
                     r.modificado,
                     s.salon_id,
-                    s.nombre as salon_nombre,
+                    s.titulo as salon_nombre,
                     s.capacidad as salon_capacidad,
-                    s.precio_base as salon_precio_base,
+                    s.importe as salon_precio_base,
                     t.turno_id,
-                    t.nombre as turno_nombre,
-                    t.hora_inicio,
-                    t.hora_fin
+                    t.orden as turno_orden,
+                    t.hora_desde,
+                    t.hora_hasta
                 FROM reservas r
                 INNER JOIN salones s ON r.salon_id = s.salon_id
                 INNER JOIN turnos t ON r.turno_id = t.turno_id
                 WHERE r.usuario_id = ? AND r.activo = 1
-                ORDER BY r.fecha_reserva DESC, t.hora_inicio ASC
+                ORDER BY r.fecha_reserva DESC, t.hora_desde ASC
             `, [usuarioId]);
             return rows;
         } catch (error) {
@@ -131,14 +131,14 @@ export class ReservaModel {
                     u.nombre_usuario as usuario_email,
                     u.celular as usuario_celular,
                     t.turno_id,
-                    t.nombre as turno_nombre,
-                    t.hora_inicio,
-                    t.hora_fin
+                    t.orden as turno_orden,
+                    t.hora_desde,
+                    t.hora_hasta
                 FROM reservas r
                 INNER JOIN usuarios u ON r.usuario_id = u.usuario_id
                 INNER JOIN turnos t ON r.turno_id = t.turno_id
                 WHERE r.salon_id = ? AND r.activo = 1
-                ORDER BY r.fecha_reserva DESC, t.hora_inicio ASC
+                ORDER BY r.fecha_reserva DESC, t.hora_desde ASC
             `, [salonId]);
             return rows;
         } catch (error) {
@@ -160,22 +160,22 @@ export class ReservaModel {
                     r.creado,
                     r.modificado,
                     s.salon_id,
-                    s.nombre as salon_nombre,
+                    s.titulo as salon_nombre,
                     s.capacidad as salon_capacidad,
                     u.usuario_id,
                     u.nombre as usuario_nombre,
                     u.apellido as usuario_apellido,
                     u.nombre_usuario as usuario_email,
                     t.turno_id,
-                    t.nombre as turno_nombre,
-                    t.hora_inicio,
-                    t.hora_fin
+                    t.orden as turno_orden,
+                    t.hora_desde,
+                    t.hora_hasta
                 FROM reservas r
                 INNER JOIN salones s ON r.salon_id = s.salon_id
                 INNER JOIN usuarios u ON r.usuario_id = u.usuario_id
                 INNER JOIN turnos t ON r.turno_id = t.turno_id
                 WHERE r.fecha_reserva = ? AND r.activo = 1
-                ORDER BY t.hora_inicio ASC
+                ORDER BY t.hora_desde ASC
             `, [fecha]);
             return rows;
         } catch (error) {
@@ -197,22 +197,22 @@ export class ReservaModel {
                     r.creado,
                     r.modificado,
                     s.salon_id,
-                    s.nombre as salon_nombre,
+                    s.titulo as salon_nombre,
                     s.capacidad as salon_capacidad,
                     u.usuario_id,
                     u.nombre as usuario_nombre,
                     u.apellido as usuario_apellido,
                     u.nombre_usuario as usuario_email,
                     t.turno_id,
-                    t.nombre as turno_nombre,
-                    t.hora_inicio,
-                    t.hora_fin
+                    t.orden as turno_orden,
+                    t.hora_desde,
+                    t.hora_hasta
                 FROM reservas r
                 INNER JOIN salones s ON r.salon_id = s.salon_id
                 INNER JOIN usuarios u ON r.usuario_id = u.usuario_id
                 INNER JOIN turnos t ON r.turno_id = t.turno_id
                 WHERE r.fecha_reserva BETWEEN ? AND ? AND r.activo = 1
-                ORDER BY r.fecha_reserva ASC, t.hora_inicio ASC
+                ORDER BY r.fecha_reserva ASC, t.hora_desde ASC
             `, [fechaInicio, fechaFin]);
             return rows;
         } catch (error) {
@@ -235,7 +235,7 @@ export class ReservaModel {
 
             const [result] = await conexion.execute(
                 'INSERT INTO reservas (fecha_reserva, salon_id, usuario_id, turno_id, foto_cumpleaniero, tematica, importe_salon, importe_total) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                [fecha_reserva, salon_id, usuario_id, turno_id, foto_cumpleaniero || null, tematica || null, importe_salon || null, importe_total || null]
+                [fecha_reserva, salon_id, usuario_id, turno_id, foto_cumpleaniero || null, tematica || null, importe_salon, importe_total]
             );
 
             // Retornar la reserva completa creada
@@ -346,13 +346,13 @@ export class ReservaModel {
             const [salonesPopulares] = await conexion.execute(`
                 SELECT 
                     s.salon_id,
-                    s.nombre,
+                    s.titulo,
                     COUNT(r.reserva_id) as total_reservas,
                     AVG(r.importe_total) as importe_promedio
                 FROM reservas r
                 INNER JOIN salones s ON r.salon_id = s.salon_id
                 WHERE r.activo = 1
-                GROUP BY s.salon_id, s.nombre
+                GROUP BY s.salon_id, s.titulo
                 ORDER BY total_reservas DESC
                 LIMIT 5
             `);
@@ -378,7 +378,7 @@ export class ReservaModel {
                     r.importe_salon,
                     r.importe_total,
                     s.salon_id,
-                    s.nombre as salon_nombre,
+                    s.titulo as salon_nombre,
                     s.capacidad as salon_capacidad,
                     u.usuario_id,
                     u.nombre as usuario_nombre,
@@ -386,9 +386,9 @@ export class ReservaModel {
                     u.nombre_usuario as usuario_email,
                     u.celular as usuario_celular,
                     t.turno_id,
-                    t.nombre as turno_nombre,
-                    t.hora_inicio,
-                    t.hora_fin,
+                    t.orden as turno_orden,
+                    t.hora_desde,
+                    t.hora_hasta,
                     DATEDIFF(r.fecha_reserva, CURDATE()) as dias_restantes
                 FROM reservas r
                 INNER JOIN salones s ON r.salon_id = s.salon_id
@@ -396,11 +396,36 @@ export class ReservaModel {
                 INNER JOIN turnos t ON r.turno_id = t.turno_id
                 WHERE r.fecha_reserva BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL ? DAY)
                 AND r.activo = 1
-                ORDER BY r.fecha_reserva ASC, t.hora_inicio ASC
+                ORDER BY r.fecha_reserva ASC, t.hora_desde ASC
             `, [diasAdelante]);
             return rows;
         } catch (error) {
             throw new Error(`Error al obtener reservas próximas: ${error.message}`);
+        }
+    }
+
+    static async obtenerTotalServiciosPorReserva(reservaId) {
+        try {
+            const [rows] = await conexion.execute(
+                'SELECT COALESCE(SUM(importe), 0) as total_servicios FROM reservas_servicios WHERE reserva_id = ?',
+                [reservaId]
+            );
+            return parseFloat(rows[0].total_servicios) || 0;
+        } catch (error) {
+            throw new Error(`Error al calcular total de servicios: ${error.message}`);
+        }
+    }
+
+    static async actualizarImporteTotal(reservaId, importeSalon, totalServicios = 0) {
+        try {
+            const importeTotal = parseFloat(importeSalon) + parseFloat(totalServicios);
+            await conexion.execute(
+                'UPDATE reservas SET importe_total = ? WHERE reserva_id = ?',
+                [importeTotal, reservaId]
+            );
+            return importeTotal;
+        } catch (error) {
+            throw new Error(`Error al actualizar importe total: ${error.message}`);
         }
     }
 }

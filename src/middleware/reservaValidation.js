@@ -57,34 +57,28 @@ export const validarReserva = [
         .withMessage('La temática debe tener máximo 255 caracteres')
         .trim(),
 
-    body('importe_salon')
-        .optional({ nullable: true })
-        .isDecimal({ decimal_digits: '0,2' })
-        .withMessage('El importe del salón debe ser un número decimal válido con máximo 2 decimales')
-        .custom((value) => {
-            if (value === null || value === undefined) return true;
-            const numero = parseFloat(value);
-            if (numero < 0) {
-                throw new Error('El importe del salón debe ser un número positivo');
-            }
-            if (numero > 999999.99) {
-                throw new Error('El importe del salón no puede exceder 999,999.99');
-            }
-            return true;
-        }),
+    // Validación para el array opcional de servicios
+    body('servicios')
+        .optional()
+        .isArray()
+        .withMessage('Los servicios deben ser un array'),
 
-    body('importe_total')
-        .optional({ nullable: true })
+    body('servicios.*.servicio_id')
+        .if(body('servicios').exists())
+        .isInt({ min: 1 })
+        .withMessage('Cada servicio debe tener un servicio_id válido (número entero positivo)'),
+
+    body('servicios.*.importe')
+        .if(body('servicios').exists())
         .isDecimal({ decimal_digits: '0,2' })
-        .withMessage('El importe total debe ser un número decimal válido con máximo 2 decimales')
+        .withMessage('Cada servicio debe tener un importe válido (número decimal con máximo 2 decimales)')
         .custom((value) => {
-            if (value === null || value === undefined) return true;
             const numero = parseFloat(value);
             if (numero < 0) {
-                throw new Error('El importe total debe ser un número positivo');
+                throw new Error('El importe del servicio debe ser un número positivo');
             }
             if (numero > 999999.99) {
-                throw new Error('El importe total no puede exceder 999,999.99');
+                throw new Error('El importe del servicio no puede exceder 999,999.99');
             }
             return true;
         }),

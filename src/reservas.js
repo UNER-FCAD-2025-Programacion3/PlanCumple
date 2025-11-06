@@ -1,6 +1,7 @@
 import express from 'express';
 import JSendResponse from './utils/jsendResponse.js';
 import notificacionRoutes from './v1/routes/notificacionRoutes.js';
+import reservaRoutes from './v1/routes/reservaRoutes.js';
 import salonRoutes from './v1/routes/salonRoutes.js';
 import servicioRoutes from './v1/routes/servicioRoutes.js';
 import turnoRoutes from './v1/routes/turnoRoutes.js';
@@ -14,6 +15,7 @@ app.get('/estado', (req, res) => {
 });
 
 app.use('/api/v1', notificacionRoutes);
+app.use('/api/v1', reservaRoutes);
 app.use('/api/v1', salonRoutes);
 app.use('/api/v1', servicioRoutes);
 app.use('/api/v1', turnoRoutes);

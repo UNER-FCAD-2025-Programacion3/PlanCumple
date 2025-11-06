@@ -1,15 +1,15 @@
 import { body, validationResult } from 'express-validator';
+import JSendResponse from '../utils/jsendResponse.js';
 
 const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/; // HH:mm
 
-const formatJsonApiError = (errors) => ({
-    errors: errors.map(error => ({
-        status: "400",
-        title: "Error de validación",
-        detail: error.msg,
-        source: { pointer: `/data/attributes/${error.path}` }
-    }))
-});
+const formatJSendError = (errors) => {
+    const validationErrors = {};
+    errors.forEach(error => {
+        validationErrors[error.path] = error.msg;
+    });
+    return JSendResponse.fail({ validation: validationErrors });
+};
 
 export const validarTurno = [
     body('orden')
@@ -28,7 +28,7 @@ export const validarTurno = [
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json(formatJsonApiError(errors.array()));
+            return res.status(400).json(formatJSendError(errors.array()));
         }
         next();
     }

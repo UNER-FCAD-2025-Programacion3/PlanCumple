@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Reservas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .fecha-reporte {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: bold;
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 2px solid #dee2e6;
+        }
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        .estado {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .estado-confirmada { background: #d4edda; color: #155724; }
+        .estado-pendiente { background: #fff3cd; color: #856404; }
+        .estado-cancelada { background: #f8d7da; color: #721c24; }
+        .total {
+            font-weight: bold;
+            color: #28a745;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 Reporte de Reservas</h1>
+        <div class="fecha-reporte">Generado el: {{fechaReporte}}</div>
+        <div class="fecha-reporte">Total de reservas: {{totalReservas}}</div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Salón</th>
+                <th>Fecha</th>
+                <th>Horario</th>
+                <th>Estado</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each reservas}}
+            <tr>
+                <td>{{reserva_id}}</td>
+                <td>{{cliente}}</td>
+                <td>{{salon}}</td>
+                <td>{{fecha_reserva}}</td>
+                <td>{{hora_inicio}} - {{hora_fin}}</td>
+                <td>
+                    <span class="estado estado-{{estado}}">{{estado}}</span>
+                </td>
+                <td class="total">${{total}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p>PlanCumple - Sistema de Gestión de Reservas</p>
+        <p>Este reporte contiene información confidencial</p>
+    </div>
+</body>
+</html>

@@ -3,6 +3,7 @@ import cors from 'cors';
 import passport from './config/passport.js';
 import JSendResponse from './utils/jsendResponse.js';
 import authRoutes from './v1/routes/authRoutes.js';
+import reporteRoutes from './v1/routes/reporteRoutes.js';
 import notificacionRoutes from './v1/routes/notificacionRoutes.js';
 import reservaRoutes from './v1/routes/reservaRoutes.js';
 import reservaServicioRoutes from './v1/routes/reservaServicioRoutes.js';
@@ -33,6 +34,9 @@ app.get('/estado', (req, res) => {
 
 // Rutas de autenticación
 app.use('/api/v1', authRoutes);
+
+// Rutas de reportes
+app.use('/api/v1', reporteRoutes);
 
 // Otras rutas
 app.use('/api/v1', notificacionRoutes);

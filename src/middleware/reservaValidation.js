@@ -57,19 +57,18 @@ export const validarReserva = [
         .withMessage('La temática debe tener máximo 255 caracteres')
         .trim(),
 
-    // Validación para el array opcional de servicios
+    // Validación para el array obligatorio de servicios
     body('servicios')
-        .optional()
         .isArray()
-        .withMessage('Los servicios deben ser un array'),
+        .withMessage('Los servicios son obligatorios y deben ser un array')
+        .isLength({ min: 1 })
+        .withMessage('Debe incluir al menos un servicio'),
 
     body('servicios.*.servicio_id')
-        .if(body('servicios').exists())
         .isInt({ min: 1 })
         .withMessage('Cada servicio debe tener un servicio_id válido (número entero positivo)'),
 
     body('servicios.*.importe')
-        .if(body('servicios').exists())
         .isDecimal({ decimal_digits: '0,2' })
         .withMessage('Cada servicio debe tener un importe válido (número decimal con máximo 2 decimales)')
         .custom((value) => {

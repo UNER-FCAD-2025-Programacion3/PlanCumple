@@ -15,14 +15,13 @@ export class ReservaServicioModel {
                     r.salon_id,
                     r.usuario_id,
                     r.turno_id,
-                    s.titulo as servicio_nombre,
+                    s.descripcion as servicio_nombre,
                     s.descripcion as servicio_descripcion,
                     s.importe as servicio_precio_base,
-                    s.categoria as servicio_categoria,
                     u.nombre as usuario_nombre,
                     u.apellido as usuario_apellido,
                     u.nombre_usuario as usuario_email,
-                    sal.nombre as salon_nombre
+                    sal.titulo as salon_nombre
                 FROM reservas_servicios rs
                 INNER JOIN reservas r ON rs.reserva_id = r.reserva_id
                 INNER JOIN servicios s ON rs.servicio_id = s.servicio_id
@@ -53,16 +52,14 @@ export class ReservaServicioModel {
                     r.turno_id,
                     r.foto_cumpleaniero,
                     r.tematica,
-                    s.titulo as servicio_nombre,
+                    s.descripcion as servicio_nombre,
                     s.descripcion as servicio_descripcion,
                     s.importe as servicio_precio_base,
-                    s.categoria as servicio_categoria,
-                    s.duracion as servicio_duracion,
                     u.nombre as usuario_nombre,
                     u.apellido as usuario_apellido,
                     u.nombre_usuario as usuario_email,
                     u.celular as usuario_celular,
-                    sal.nombre as salon_nombre,
+                    sal.titulo as salon_nombre,
                     sal.capacidad as salon_capacidad
                 FROM reservas_servicios rs
                 INNER JOIN reservas r ON rs.reserva_id = r.reserva_id
@@ -87,15 +84,13 @@ export class ReservaServicioModel {
                     rs.importe,
                     rs.creado,
                     rs.modificado,
-                    s.titulo as servicio_nombre,
+                    s.descripcion as servicio_nombre,
                     s.descripcion as servicio_descripcion,
-                    s.importe as servicio_precio_base,
-                    s.categoria as servicio_categoria,
-                    s.duracion as servicio_duracion
+                    s.importe as servicio_precio_base
                 FROM reservas_servicios rs
                 INNER JOIN servicios s ON rs.servicio_id = s.servicio_id
                 WHERE rs.reserva_id = ? AND s.activo = 1
-                ORDER BY s.categoria ASC, s.titulo ASC
+                ORDER BY s.descripcion ASC
             `, [reservaId]);
             return rows;
         } catch (error) {
@@ -123,7 +118,7 @@ export class ReservaServicioModel {
                     u.apellido as usuario_apellido,
                     u.nombre_usuario as usuario_email,
                     u.celular as usuario_celular,
-                    sal.nombre as salon_nombre,
+                    sal.titulo as salon_nombre,
                     t.orden as turno_orden,
                     t.hora_desde,
                     t.hora_hasta
@@ -258,8 +253,7 @@ export class ReservaServicioModel {
             const [serviciosPopulares] = await conexion.execute(`
                 SELECT 
                     s.servicio_id,
-                    s.titulo,
-                    s.categoria,
+                    s.descripcion,
                     COUNT(rs.reserva_servicio_id) as total_contrataciones,
                     AVG(rs.importe) as importe_promedio,
                     SUM(rs.importe) as ingresos_totales
@@ -267,29 +261,14 @@ export class ReservaServicioModel {
                 INNER JOIN servicios s ON rs.servicio_id = s.servicio_id
                 INNER JOIN reservas r ON rs.reserva_id = r.reserva_id
                 WHERE r.activo = 1 AND s.activo = 1
-                GROUP BY s.servicio_id, s.titulo, s.categoria
+                GROUP BY s.servicio_id, s.descripcion
                 ORDER BY total_contrataciones DESC
                 LIMIT 10
             `);
 
-            const [categoriaStats] = await conexion.execute(`
-                SELECT 
-                    s.categoria,
-                    COUNT(rs.reserva_servicio_id) as total_contrataciones,
-                    AVG(rs.importe) as importe_promedio,
-                    SUM(rs.importe) as ingresos_totales
-                FROM reservas_servicios rs
-                INNER JOIN servicios s ON rs.servicio_id = s.servicio_id
-                INNER JOIN reservas r ON rs.reserva_id = r.reserva_id
-                WHERE r.activo = 1 AND s.activo = 1
-                GROUP BY s.categoria
-                ORDER BY total_contrataciones DESC
-            `);
-
             return {
                 ...estadisticas[0],
-                servicios_populares: serviciosPopulares,
-                estadisticas_por_categoria: categoriaStats
+                servicios_populares: serviciosPopulares
             };
         } catch (error) {
             throw new Error(`Error al obtener estadísticas de reservas de servicios: ${error.message}`);

@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './config/swagger.js';
 import passport from './config/passport.js';
 import JSendResponse from './utils/jsendResponse.js';
 import authRoutes from './v1/routes/authRoutes.js';
@@ -28,9 +30,29 @@ app.use(express.json());
 // Inicializar Passport
 app.use(passport.initialize());
 
+/**
+ * @swagger
+ * /estado:
+ *   get:
+ *     summary: Verificar estado del servidor
+ *     tags: [Estado]
+ *     responses:
+ *       200:
+ *         description: El servidor está funcionando correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/JSendSuccess'
+ */
 app.get('/estado', (req, res) => {
     res.status(200).json(JSendResponse.success({ estado: 'todo bien!' }));
 });
+
+// Documentación Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'PlanCumple API Docs'
+}));
 
 // Rutas de autenticación
 app.use('/api/v1', authRoutes);

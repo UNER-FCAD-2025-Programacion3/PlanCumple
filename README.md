@@ -18,6 +18,18 @@ La API utiliza **versionado por URL** para mantener compatibilidad y permitir ev
 ### Versión actual: **v1**
 - **Base URL**: `http://localhost:3000/api/v1`
 - **Formato de respuesta**: [JSend](https://github.com/omniti-labs/jsend)
+- **Documentación interactiva**: `http://localhost:3000/api-docs` (Swagger UI)
+
+### 📚 Documentación con Swagger
+
+La API cuenta con documentación interactiva generada con Swagger/OpenAPI 3.0:
+
+- **URL**: [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
+- **Características**:
+  - Explorar todos los endpoints disponibles
+  - Probar las peticiones directamente desde el navegador
+  - Ver los esquemas de datos (request/response)
+  - Ejemplos de uso para cada endpoint
 
 ### Endpoints disponibles:
 
